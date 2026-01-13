@@ -9,24 +9,29 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: .
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      # 🔍 DEBUG STEP (VERY IMPORTANT)
+      - name: Verify repo contents
+        run: |
+          pwd
+          ls -la
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
+        working-directory: ${{ github.workspace }}
         run: terraform init
 
       - name: Terraform Validate
+        working-directory: ${{ github.workspace }}
         run: terraform validate
 
       - name: Terraform Plan
+        working-directory: ${{ github.workspace }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -34,10 +39,10 @@ jobs:
         run: terraform plan
 
       - name: Terraform Apply
+        working-directory: ${{ github.workspace }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: terraform apply -auto-approve
-
 
